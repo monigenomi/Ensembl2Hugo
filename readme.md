@@ -1,7 +1,10 @@
 # Ensembl to Hugo
 
-Program translates transcript id or gene id from Ensembl to Hugo gene nomenclature. 
+Program translates transcript id or gene id from Ensembl to Hugo gene nomenclature and opposite.  
 
+## Usage
+
+``Rscript ensembl_to_hugo.R --items "ENSG00000133703" "BRCA1"``
 
 ## Donwloaded data
 
