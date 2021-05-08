@@ -9,7 +9,6 @@ File with ids to translate is attached (test_ids_input.tsv).
 
 ```{r}
 library(stringr)
-library(maps)
 
 remove_suffix <- function(ensembl_id) {
   return(str_remove(ensembl_id, "\\.\\d+"))
@@ -26,61 +25,52 @@ detect_id_type <- function(name) {
   return("hugo_gene")
 }
 
-transcript_to_gene <- function(transcript, ensembl_table) {
-  gene_id = ensembl_table[1]
-  transcript_id = ensembl_table[2]
-  return(gene_id[transcript_id == transcript])
-}
-
-read_tables <- function(ensembl_path, hugo_path) {
-  ensembl_table <<- read.table(file=ensembl_path)
-  hugo_table <<- read.table(file=hugo_path, , sep="\t", fill = TRUE)
-  hugo_gene <<- hugo_table[2]
-  hugo_ens <<- hugo_table[3]
-  gene_id <<- ensembl_table[1]
-  transcript_id <<- ensembl_table[2]
-}
-
-```
-
-
-```{r}
-
-ensembl_table = "test_ids_input.tsv"
-hugo_table = "hgnc_custom.tsv"
-#ensembl_table ="test/ensembl_ids_test.tsv"
-#hugo_table = "test/hugo_test.tsv"
-
 translate <- function(query, ensembl_table, hugo_table) {
-  read_tables(ensembl_table, hugo_table)
+  ensembl_gene = ensembl_table[1]
+  ensembl_transcript = ensembl_table[2]
+  
+  hugo_gene_symbol = hugo_table[1]
+  hugo_ensembl_id = hugo_table[2]
+  
   type = detect_id_type(query)
   if(type == "ens_gene") {
-    print(hugo_gene[hugo_ens == remove_suffix(query)])
-    return(hugo_gene[hugo_ens == remove_suffix(query)])
+    return(hugo_gene_symbol[hugo_ensembl_id == remove_suffix(query)])
   }
   else if(type == "ens_transcript") {
-    gene = remove_suffix(transcript_to_gene(query, ensembl_table))
-    return(hugo_gene[hugo_ens == gene])
+    gene = remove_suffix(ensembl_gene[ensembl_transcript == query])
+    return(hugo_gene_symbol[hugo_ensembl_id == gene])
   }
-  id = hugo_ens[hugo_gene == query]
-  return(gene_id[remove_suffix(gene_id) == id])
+  return(hugo_ensembl_id[hugo_gene_symbol == query])
 }
 
-translate("ENSG00000151360", ensembl_table, hugo_table)
+```
+
+
+```{r}
+#ensembl_table = "test_ids_input.tsv"
+#hugo_table = "hgnc_custom.tsv"
+ensembl_path = "test/test_ids_input_test.tsv"
+hugo_path = "test/hgnc_custom_test.tsv"
+
+ENSEMBL_TABLE <<- read.table(file=ensembl_path, header=TRUE)
+HUGO_TABLE <<- read.table(file=hugo_path, header=TRUE , sep="\t", fill = TRUE)
 
 ```
+
+
 TESTS
 ```{r}
-read_tables("test/ensembl_ids_test.tsv", "test/hugo_test.tsv")
+
+translate("ENSG00000133703", ENSEMBL_TABLE, HUGO_TABLE) == "KRAS"
+translate("ENST00000557334.1", ENSEMBL_TABLE, HUGO_TABLE) == "KRAS"
+translate("ENST00000557334.1", ENSEMBL_TABLE, HUGO_TABLE) == translate("ENST00000556131.1", ENSEMBL_TABLE, HUGO_TABLE)
+translate("KRAS", ENSEMBL_TABLE, HUGO_TABLE) == "ENSG00000133703"
+
 detect_id_type("ENSG00000151360") == "ens_gene"
 detect_id_type("ENST00000151360") == "ens_transcript"
-detect_id_type("KRAS") == "hugo_gene"
+detect_id_type("KRAS proto-oncogene, GTPase") == "hugo_gene"
 
-transcript_to_gene("ENST00000496771.1", ensembl_table) == "ENSG00000000003.10"
+remove_suffix("ENST00000373031.4") == "ENST00000373031"
 
-remove_suffix("ENST00000373031.4")
-translate("ENSG00000151360", ensembl_table, hugo_table)# == "allantoicase"
-translate("ENST00000373031.4", ensembl_table, hugo_table) == "tenomodulin"
-translate("KRAS", ensembl_table, hugo_table)
 ```
 
