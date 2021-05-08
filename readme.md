@@ -6,9 +6,9 @@ Program translates transcript id or gene id from Ensembl to Hugo gene nomenclatu
 
 ``Rscript ensembl_to_hugo.R --items "ENSG00000133703" "BRCA1"``
 
-## Donwloaded data
+## Downloaded data
 
-Data donwnloaded from https://www.genenames.org/download/custom/
+Data downloaded from https://www.genenames.org/download/custom/
 
 Selected data:
 
