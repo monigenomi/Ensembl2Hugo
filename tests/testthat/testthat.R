@@ -1,3 +1,4 @@
+library(usethis)
 source("../../ensembl_to_hugo.R")
 context("Test functions for ensembl to hugo.")
 
